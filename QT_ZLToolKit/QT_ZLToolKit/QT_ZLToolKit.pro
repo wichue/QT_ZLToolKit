@@ -100,7 +100,8 @@ HEADERS += \
     ../../src/Util/strptime_win.h \
     ../../src/Util/util.h \
     ../../src/Util/uv_errno.h \
-    mainwindow.h
+    mainwindow.h \
+    qt_test/TestClient.h
 
 FORMS += \
     mainwindow.ui
