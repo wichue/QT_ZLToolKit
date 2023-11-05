@@ -167,6 +167,7 @@ void Socket::connect_l(const string &url, uint16_t port, const onErrCB &con_cb_i
         }
 
         // 监听该socket是否可写，可写表明已经连接服务器成功
+        // chw:addEvent成功返回0表示连接成功，失败返回-1
         int result = strong_self->_poller->addEvent(sock, EventPoller::Event_Write, [weak_self, sock, con_cb](int event) {
             if (auto strong_self = weak_self.lock()) {
                  // socket可写事件，说明已经连接服务器成功

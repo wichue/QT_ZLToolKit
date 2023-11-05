@@ -361,7 +361,7 @@ static atomic<uint64_t> s_currentMicrosecond_system(getCurrentMicrosecondOrigin(
 static atomic<uint64_t> s_currentMillisecond_system(getCurrentMicrosecondOrigin() / 1000);
 
 static inline bool initMillisecondThread() {
-    static std::thread s_thread([]() {
+    static std::thread s_thread([]() {//chw:时间戳线程，静态成员只执行一次，因此只有一个stamp thread
         setThreadName("stamp thread");
         DebugL << "Stamp thread started";
         uint64_t last = getCurrentMicrosecondOrigin();
@@ -393,7 +393,7 @@ static inline bool initMillisecondThread() {
     });
     return true;
 }
-
+// chw:获取当前毫秒
 uint64_t getCurrentMillisecond(bool system_time) {
     static bool flag = initMillisecondThread();
     if (system_time) {
@@ -401,7 +401,7 @@ uint64_t getCurrentMillisecond(bool system_time) {
     }
     return s_currentMillisecond.load(memory_order_acquire);
 }
-
+// chw:获取当前微秒
 uint64_t getCurrentMicrosecond(bool system_time) {
     static bool flag = initMillisecondThread();
     if (system_time) {

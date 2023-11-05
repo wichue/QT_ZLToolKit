@@ -483,6 +483,7 @@ int SockUtil::connect(const char *host, uint16_t port, bool async, const char *l
         //同步连接成功
         return sockfd;
     }
+    // chw:返回EINPROGRESS是非阻塞正在连接，上一层验证fd可写，则表示连接成功
     if (async && get_uv_error(true) == UV_EAGAIN) {
         //异步连接成功
         return sockfd;

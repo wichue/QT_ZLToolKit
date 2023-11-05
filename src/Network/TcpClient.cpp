@@ -84,7 +84,7 @@ void TcpClient::startConnect(const string &url, uint16_t port, float timeout_sec
         }
     }, timeout_sec, _net_adapter, local_port);
 }
-
+// chw:连接结果回调
 void TcpClient::onSockConnect(const SockException &ex) {
     TraceL << getIdentifier() << " connect result: " << ex;
     if (ex) {

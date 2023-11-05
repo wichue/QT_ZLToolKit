@@ -1,6 +1,6 @@
-QT       += core gui
+QT       += core
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
 
@@ -53,8 +53,8 @@ SOURCES += \
     ../../src/Util/strptime_win.cpp \
     ../../src/Util/util.cpp \
     ../../src/Util/uv_errno.cpp \
-    main.cpp \
-    mainwindow.cpp
+    main.cpp
+#    mainwindow.cpp
 
 HEADERS += \
     ../../src/Network/Buffer.h \
@@ -100,11 +100,13 @@ HEADERS += \
     ../../src/Util/strptime_win.h \
     ../../src/Util/util.h \
     ../../src/Util/uv_errno.h \
-    mainwindow.h \
-    qt_test/TestClient.h
+#    mainwindow.h \
+    qt_test/TestClient.h \
+    qt_test/test_stampthread.h \
+    qt_test/test_timer.h
 
 FORMS += \
-    mainwindow.ui
+#    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

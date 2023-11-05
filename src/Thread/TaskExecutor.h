@@ -22,6 +22,7 @@ namespace toolkit {
 /**
 * cpu负载计算器
 */
+// chw:工作时长/总时长，比如epoll，监听到事件，处理事件for()的时间是工作时长，epoll_wait等待时间则是非工作时长
 class ThreadLoadCounter {
 public:
     /**
@@ -80,6 +81,7 @@ template<class R, class... ArgTypes>
 class TaskCancelableImp;
 
 template<class R, class... ArgTypes>
+// chw:封装可以取消的任务类，重载运算符，定义默认返回值
 class TaskCancelableImp<R(ArgTypes...)> : public TaskCancelable {
 public:
     using Ptr = std::shared_ptr<TaskCancelableImp>;

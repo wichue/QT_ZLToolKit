@@ -171,6 +171,7 @@ private:
     /**
      * 获取select或epoll休眠时间
      */
+    // chw:精确设置每次 epoll_wait 的休眠时间，线程效率最大化
     uint64_t getMinDelay();
 
     /**
