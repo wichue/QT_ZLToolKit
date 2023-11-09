@@ -1,130 +1,88 @@
-# 一个基于C++11简单易用的轻量级网络编程框架
+## Thread
+### semaphore.h(自定义信号量，封装类，由条件变量实现)
+class semaphore，接口：post、wait。
 
-![](https://github.com/ZLMediaKit/ZLToolKit/actions/workflows/linux.yml/badge.svg)
-![](https://github.com/ZLMediaKit/ZLToolKit/actions/workflows/macos.yml/badge.svg)
-![](https://github.com/ZLMediaKit/ZLToolKit/actions/workflows/windows.yml/badge.svg)
+### TaskExecutor.h(cpu负载计算，Task函数指针模板，任务执行器管理，管理任务执行线程池)
+class ThreadLoadCounter，cpu负载计算器，基类，统计线程每一次的睡眠时长和工作时长，并记录样本，调用load计算cpu负载=工作时长/总时长。
+class TaskCancelable : public noncopyable，抽象类，可取消任务基类。
+class TaskCancelableImp<R(ArgTypes...)> : public TaskCancelable，函数指针模板，event poller async 任务、DelayTask 任务等均使用该类型，任务可取消，重载()运算符执行任务，根据返回值类型，返回默认返回值。
+class TaskExecutorInterface，抽象类，提供任务执行接口：async、async_first、sync、sync_first。
+class TaskExecutor : public ThreadLoadCounter, public TaskExecutorInterface，任务执行器，抽象类，无新增接口。
+class TaskExecutorGetter，获得任务执行器，抽象类，接口：getExecutor、getExecutorSize。
+class TaskExecutorGetterImp : public TaskExecutorGetter，实现抽象类接口，提供接口：getExecutorLoad(cpu负载)、for_each(遍历所有线程)、addPoller(创建 EventPoller 线程池)。
 
-## 项目特点
-- 基于C++11开发，避免使用裸指针，代码稳定可靠；同时跨平台移植简单方便，代码清晰简洁。
-- 使用epoll+线程池+异步网络IO模式开发，并发性能优越。
-- 代码经过大量的稳定性、性能测试，可满足商用服务器项目。
-- 支持linux、macos、ios、android、windows平台
-- 了解更多:[ZLMediaKit](https://github.com/ZLMediaKit/ZLMediaKit)
+### TaskQueue.h(由信号量控制的任务队列，加了线程锁，线程安全)
+class TaskQueue，接口：push_task、push_exit、get_task、size。
 
-## 特性
-- 网络库
-  - tcp/udp客户端，接口简单易用并且是线程安全的，用户不必关心具体的socket api操作。
-  - tcp/udp服务器，使用非常简单，只要实现具体的tcp/udp会话（Session类）逻辑,使用模板的方式可以快速的构建高性能的服务器。
-  - 对套接字多种操作的封装。
-- 线程库
-  - 使用线程实现的简单易用的定时器。
-  - 信号量。
-  - 线程组。
-  - 简单易用的线程池，可以异步或同步执行任务，支持functional 和 lambad表达式。
-- 工具库
-  - 文件操作。
-  - std::cout风格的日志库，支持颜色高亮、代码定位、异步打印。
-  - INI配置文件的读写。
-  - 监听者模式的消息广播器。
-  - 基于智能指针的循环池，不需要显式手动释放。
-  - 环形缓冲，支持主动读取和读取事件两种模式。
-  - mysql链接池，使用占位符（？）方式生成sql语句，支持同步异步操作。
-  - 简单易用的ssl加解密黑盒，支持多线程。
-  - 其他一些有用的工具。
-  - 命令行解析工具，可以很便捷的实现可配置应用程序
+### threadgroup.h(线程组管理，创建线程，移除线程)
+class thread_group，成员：_threads(umap存储线程组)，接口：create_thread、remove_thread、is_thread_in、join_all、size。
 
-## 编译(Linux)
-- 我的编译环境
-  - Ubuntu16.04 64 bit + gcc5.4(最低gcc4.7)
-  - cmake 3.5.1
-- 编译
+### ThreadPool.h(线程池任务管理，管理线程组执行任务队列)
+class ThreadPool : public TaskExecutor，成员：thread_group、TaskQueue<Task::Ptr>，接口：start(启动线程池)、async(异步加入任务到队列)。
 
-  ```
-  cd ZLToolKit
-  ./build_for_linux.sh
-  ```  
-  
-## 编译(macOS)
-- 我的编译环境
-  - macOS Sierra(10.12.1) + xcode8.3.1
-  - Homebrew 1.1.3
-  - cmake 3.8.0
-- 编译
-  
-  ```
-  cd ZLToolKit
-  ./build_for_mac.sh
-  ```
-	 
-## 编译(iOS)
-- 编译环境:`请参考macOS的编译指导。`
-- 编译
-  
-  ```
-  cd ZLToolKit
-  ./build_for_ios.sh
-  ```
-- 你也可以生成Xcode工程再编译：
-
-  ```
-  cd ZLToolKit
-  mkdir -p build
-  cd build
-  # 生成Xcode工程，工程文件在build目录下
-  cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/iOS.cmake -DIOS_PLATFORM=SIMULATOR64 -G "Xcode"
-  ```
-## 编译(Android)
-- 我的编译环境
-  - macOS Sierra(10.12.1) + xcode8.3.1
-  - Homebrew 1.1.3
-  - cmake 3.8.0
-  - [android-ndk-r14b](https://dl.google.com/android/repository/android-ndk-r14b-darwin-x86_64.zip)
-- 编译
-
-  ```
-  cd ZLToolKit
-  export ANDROID_NDK_ROOT=/path/to/ndk
-  ./build_for_android.sh
-  ```
-## 编译(Windows)
-- 我的编译环境
-  - windows 10
-  - visual studio 2017
-  - [openssl](http://slproweb.com/download/Win32OpenSSL-1_1_0f.exe)
-  - [mysqlclient](https://dev.mysql.com/downloads/file/?id=472430)
-  - [cmake-gui](https://cmake.org/files/v3.10/cmake-3.10.0-rc1-win32-x86.msi)
-  
-- 编译
-```
-   1 使用cmake-gui打开工程并生成vs工程文件.
-   2 找到工程文件(ZLToolKit.sln),双击用vs2017打开.
-   3 选择编译Release 版本.
-   4 依次编译 ZLToolKit_static、ZLToolKit_shared、ALL_BUILD、INSTALL.
-   5 找到目标文件并运行测试用例.
-   6 找到安装的头文件及库文件(在源码所在分区根目录).
-```
-## 授权协议
-
-本项目自有代码使用宽松的MIT协议，在保留版权信息的情况下可以自由应用于各自商用、非商业的项目。
-但是本项目也零碎的使用了一些其他的开源代码，在商用的情况下请自行替代或剔除；
-由于使用本项目而产生的商业纠纷或侵权行为一概与本项项目及开发者无关，请自行承担法律风险。
-
-## QA
- - 该库性能怎么样？
-
-基于ZLToolKit，我实现了一个流媒体服务器[ZLMediaKit](https://github.com/ZLMediaKit/ZLMediaKit);作者已经对其进行了性能测试，可以查看[benchmark.md](https://github.com/ZLMediaKit/ZLMediaKit/blob/master/benchmark.md)了解详情。
-
- - 该库稳定性怎么样？
-
-该库经过作者严格的valgrind测试，长时间大负荷的测试；作者也使用该库进行了多个线上项目的开发。实践证明该库稳定性很好；可以无看门狗脚本的方式连续运行几个月。
-
- - 在windows下编译很多错误？
- 
- 由于本项目主体代码在macOS/linux下开发，部分源码采用的是无bom头的UTF-8编码；由于windows对于utf-8支持不甚友好，所以如果发现编译错误请先尝试添加bom头再编译。
+### WorkThreadPool.h(创建一个工作线程池，可以加入线程负载均衡分配算法，类似EventPollerPool)
+class WorkThreadPool : public TaskExecutorGetterImp，接口：getPoller、getFirstPoller、setPoolSize。
 
 
-## 联系方式
-- 邮箱：<1213642868@qq.com>（本项目相关或网络编程相关问题请走issue流程，否则恕不邮件答复）
-- QQ群：542509000
+## Poller
+### Pipe.h(管道对象封装)
+class Pipe，成员：std::shared_ptr<PipeWrap>、EventPoller::Ptr _poller。
 
+### PipeWrap.h(管道的封装，windows下由socket模拟)
+class PipeWrap，成员：int _pipe_fd[2]，接口：write、read。
+
+### SelectWrap.h(select 模型的简单封装)
+class FdSet
+
+### Timer.h(定时器对象)
+class Timer，成员：EventPoller::Ptr(引用)，构造函数传参超时时长和超时回调函数，EventPoller 选传或自动获取，超时回调在 EventPoller 线程执行。
+
+### EventPoller.h(基于epoll事件轮询模块)
+class EventPoller : public TaskExecutor, public AnyStorage，基于epoll，可监听fd网络事件，async管道触发执行异步任务，doDelayTask定时器回调任务，runLoop执行事件循环体，添加/删除/修改监听事件，_event_map<网络fd和管道fd,回调>，_delay_task_map<延迟触发时间,回调>，_list_task<异步任务列表Task>。
+class EventPollerPool :public TaskExecutorGetterImp，管理 EventPoller 线程池，可创建多个 EventPoller 线程，使用cpu负载均衡算法均匀分配线程，getPoller-》getExecutor 获得线程池内cpu负载最低的 EventPoller 线程。
+
+
+## Network
+### Buffer.h
+class Buffer : public noncopyable，缓存抽象类，纯虚函数：data、size、toString、getCapacity，成员：ObjectStatistic<Buffer>对象个数统计。
+class BufferOffset : public  Buffer，成员：typename _data，构造函数传参offset，data获取+offset偏移的buffer。
+class BufferRaw : public Buffer，成员：char *_data，接口：setCapacity分配，assign赋值，指针式缓存，根据分配内存大小自动扩减容。
+class BufferLikeString : public Buffer，成员：std::string _str，接口：erase、append、push_back、insert、assign、clear、capacity、reserve、resize、empty、substr等，字符串操作缓存。
+
+### BufferSock.h
+class BufferSock : public Buffer，成员：Buffer::Ptr _buffer、sockaddr_storage，管理_buffer指向的缓存。
+class BufferList : public noncopyable，抽象类，接口：create、empty、count、send。
+内部类
+class BufferCallBack，成员：BufferList::SendResult回调函数，List<std::pair<Buffer::Ptr, bool> > 缓存列表，接口：sendFrontSuccess、sendCompleted，发送结果回调。
+class BufferSendMsg final : public BufferList, public BufferCallBack，成员：_remain_size(剩余字节数)、_iovec(data和len组成的vector)、_iovec_off(_iovec当前发送下标)，接口：send、send_l(执行系统调用sendmsg)，socket发送数据时的buffer封装，用于tcp发送。
+class BufferSendTo final: public BufferList, public BufferCallBack，接口：send(执行系统调用::sendto和::send)。
+class BufferSendMMsg : public BufferList, public BufferCallBack，和 BufferSendMsg 类似，用于udp发送。
+
+### Server.h
+class SessionMap，成员：std::unordered_map<std::string, std::weak_ptr<Session> >，管理Session，add、del、get。
+class SessionHelper，成员：Session::Ptr、SessionMap::Ptr、Server，记录session至全局的map，方便后面管理。
+class Server : public mINI，成员：EventPoller::Ptr，初始化设置EventPoller线程。
+
+### Session.h
+class TcpSession : public Session
+class UdpSession : public Session
+class Session : public SocketHelper，成员：std::unique_ptr<toolkit::ObjectStatistic<toolkit::TcpSession> >、std::unique_ptr<toolkit::ObjectStatistic<toolkit::UdpSession> >，用于存储一对客户端与服务端间的关系。
+
+### Socket.h
+typedef enum ErrCode，自定义socket错误枚举。
+class SockException : public std::exception，成员：ErrCode，错误信息类，用于抛出系统和自定义异常，接口：what、getErrCode、getCustomCode、reset。
+typedef enum SockType，socket类型，udp、tcp、tcpserver。
+class SockNum，成员：int _fd、SockType _type，析构时关闭socket。
+class SockFD : public noncopyable，成员：SockNum、EventPoller，文件描述符fd的封装，析构时停止事件监听，关闭socket。
+class MutexWrapper，接口：lock、unlock，线程锁的封装，默认使用递归锁recursive_mutex。
+class SockInfo，抽象类，接口：get_local_ip、get_local_port、get_peer_ip、get_peer_port、getIdentifier。
+class Socket : public noncopyable, public SockInfo，成员：SockFD、EventPoller(网络事件触发和异步执行在此线程)，异步IO Socket对象，包括tcp客户端、服务器和udp套接字，包含：错误回调、接收数据回调、tcp服务监听进入回调，connect、listen、send等接口的封装。
+class SockSender，抽象类，接口：send、shutdown，重载运算符<<发送数据，定义socket发送接口。
+class SocketHelper : public SockSender, public SockInfo, public TaskExecutorInterface，抽象类，成员：Socket、EventPoller，主要是对Socket类的二次封装，自定义类继承该类，实现纯虚接口即可创建一个完整的socket类，比如tcpclient。
+class SockUtil，套接字工具类，封装了socket、网络的一些基本操作，提供静态全局接口，比如connect、listen等。
+class TcpClient : public SocketHelper，抽象类，Tcp客户端，自定义类继承与该类，实现onConnect、onManager回调即可创建一个可运行的tcp客户端。
+class TcpServer : public Server，可配置的TCP服务器。
+class UdpServer : public Server，可配置的UDP服务器。
+
+### ResourcePool.h(资源池)
 
