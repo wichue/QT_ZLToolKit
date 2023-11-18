@@ -115,6 +115,12 @@ class TcpServer : public Server，可配置的TCP服务器。
 
 class UdpServer : public Server，可配置的UDP服务器。
 
+## Util
+### NoticeCenter.h
+
+class EventDispatcher，成员：std::unordered_multimap<void *, Any>（first指针，多个对象监听相同事件传的指针必须不同，second是监听该事件的回调），recursive_mutex，事件分发器，监听同一个事件的回调。
+
+class NoticeCenter，成员：std::unordered_map<std::string, EventDispatcher::Ptr>（first事件名，second分发器），recursive_mutex，接口：emitEvent，addListener，delListener，广播中心，全局单例。
 
 ### ResourcePool.h(资源池)
 

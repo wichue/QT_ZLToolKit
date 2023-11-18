@@ -7,6 +7,8 @@
 #include "qt_test/TestClient.h"
 #include "qt_test/test_stampthread.h"
 #include "qt_test/test_timer.h"
+#include "qt_test/test_NoticeCenter.h"
+#include "qt_test/test_onceToken.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,5 +22,7 @@ int main(int argc, char *argv[])
     setbuf(stdout,nullptr);
 //    test_TcpClient();
 //    test_stampthread();
-    test_timer();
+//    test_timer();
+//    test_NoticeCenter();
+    test_onceToken();
 }
