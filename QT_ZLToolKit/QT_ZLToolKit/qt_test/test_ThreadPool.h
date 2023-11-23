@@ -10,6 +10,16 @@
 using namespace std;
 using namespace toolkit;
 
+/**
+ * @brief thread_group ：线程组，移植自boost。
+ * create_thread 快速创建一组线程，并指定参数和线程处理函数。
+ */
+
+/**
+ * @brief ThreadPool ：线程池，可以输入functional任务至后台线程执行
+ * 构造函数中创建线程组 thread_group _thread_group，从任务队列 TaskQueue<Task::Ptr> _queue 获取任务在线程池执行。
+ * 线程池中所有线程共用一个任务队列 _queue,ThreadPool 无锁，但 _queue 中有锁，目前ZLM中没有 ThreadPool 应用。
+ */
 int test_ThreadPool() {
     //初始化日志系统
     Logger::Instance().add(std::make_shared<ConsoleChannel>());

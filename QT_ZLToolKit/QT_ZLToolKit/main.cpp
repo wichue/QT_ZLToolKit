@@ -9,6 +9,8 @@
 #include "qt_test/test_timer.h"
 #include "qt_test/test_NoticeCenter.h"
 #include "qt_test/test_onceToken.h"
+#include "qt_test/test_ObjectStatistic.h"
+#include "qt_test/test_Any.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,5 +26,7 @@ int main(int argc, char *argv[])
 //    test_stampthread();
 //    test_timer();
 //    test_NoticeCenter();
-    test_onceToken();
+//    test_onceToken();
+//    test_ObjectStatistic();
+    test_Any();
 }

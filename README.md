@@ -123,4 +123,9 @@ class EventDispatcher，成员：std::unordered_multimap<void *, Any>（first指
 class NoticeCenter，成员：std::unordered_map<std::string, EventDispatcher::Ptr>（first事件名，second分发器），recursive_mutex，接口：emitEvent，addListener，delListener，广播中心，全局单例。
 
 ### ResourcePool.h(资源池)
+class shared_ptr_imp : public std::shared_ptr<C>，对智能指针封装，增加接口：quit，放弃或回收到资源池。
+
+class ResourcePool_l，成员：std::vector<C *> _objs（C对象指针内存数组），std::atomic_flag _busy（原子锁，线程安全），接口：obtain、obtain2，内存池功能实现。
+
+class ResourcePool，成员：std::shared_ptr<ResourcePool_l<C>> pool，接口：obtain、obtain2，封装内存池对外接口。
 

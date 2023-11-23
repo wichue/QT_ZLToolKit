@@ -102,8 +102,13 @@ HEADERS += \
     ../../src/Util/uv_errno.h \
 #    mainwindow.h \
     qt_test/TestClient.h \
+    qt_test/test_Any.h \
+    qt_test/test_EventPollerPool.h \
     qt_test/test_NoticeCenter.h \
+    qt_test/test_ObjectStatistic.h \
+    qt_test/test_ResourcePool.h \
     qt_test/test_ThreadPool.h \
+    qt_test/test_WorkThreadPool.h \
     qt_test/test_onceToken.h \
     qt_test/test_stampthread.h \
     qt_test/test_timer.h
