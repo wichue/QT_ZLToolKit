@@ -11,6 +11,7 @@
 #include "qt_test/test_onceToken.h"
 #include "qt_test/test_ObjectStatistic.h"
 #include "qt_test/test_Any.h"
+#include "qt_test/test_function_traits.h"
 
 int main(int argc, char *argv[])
 {
@@ -28,5 +29,6 @@ int main(int argc, char *argv[])
 //    test_NoticeCenter();
 //    test_onceToken();
 //    test_ObjectStatistic();
-    test_Any();
+//    test_Any();
+    test_function_traits();
 }

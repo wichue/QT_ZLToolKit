@@ -2,7 +2,7 @@ QT       += core
 
 #greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++11 c++17
 
 DESTDIR = bin
 # The following define makes your compiler emit warnings if you use
@@ -109,6 +109,7 @@ HEADERS += \
     qt_test/test_ResourcePool.h \
     qt_test/test_ThreadPool.h \
     qt_test/test_WorkThreadPool.h \
+    qt_test/test_function_traits.h \
     qt_test/test_onceToken.h \
     qt_test/test_stampthread.h \
     qt_test/test_timer.h

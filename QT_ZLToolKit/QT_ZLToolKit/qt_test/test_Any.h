@@ -48,14 +48,20 @@ void test_Any() {
 
         //拷贝构造，get<Student>(bool可选参数)返回智能指针所管理的原始指针的对象引用
         Student S1 = aa.get<Student>();
-        printf("age=%d\n",aa.get<Student>().age);
-        printf("age=%d\n",S1.age);
+//        aa.reset();//如果天提前释放aa，则捕获异常，打印： ex=Any is empty
+        try{
+            printf("aa age=%d\n",aa.get<Student>().age);
+        }catch(std::exception& e) {
+            printf("ex=%s\n",e.what());
+        }
+
+        printf("s1 age=%d\n",S1.age);
 
         //离开作用域打印：
         // Student
         // Student copy
-        // age=17
-        // age=17
+        // aa age=17
+        // s1 age=17
         // ~Student
         // ~Student
     }
