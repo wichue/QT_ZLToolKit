@@ -117,7 +117,7 @@ class TcpServer : public Server，可配置的TCP服务器。
 class UdpServer : public Server，可配置的UDP服务器。
 
 ## Util
-### NoticeCenter.h
+### NoticeCenter.h(通知中心)
 
 class EventDispatcher，成员：std::unordered_multimap<void *, Any>（first指针，多个对象监听相同事件传的指针必须不同，second是监听该事件的回调），recursive_mutex，事件分发器，监听同一个事件的回调。
 
@@ -130,3 +130,18 @@ class ResourcePool_l，成员：std::vector<C *> _objs（C对象指针内存数�
 
 class ResourcePool，成员：std::shared_ptr<ResourcePool_l<C>> pool，接口：obtain、obtain2，封装内存池对外接口。
 
+### mini.h(读写配置文件)
+class mINI_basic : public std::map<key, variant>，接口：parseFile(解析配置文件)、dumpFile(保存配置文件)，实际上是个map，保存的是配置文件键值对。
+
+struct variant : public std::string，把任何配置项按 std::string 字符串处理。
+
+using mINI = mINI_basic<std::string, variant>，mINI::Instance() 是全局单例对象，管理<key,value>配置项。
+
+### CMD.h(命令行参数解析)
+class Option，选项类，成员:_short_opt(短选项名)、_long_opt(长选项名)、_des(描述)、_default_value(默认值)、_cb(回调)、_type(参数类型)。
+
+class OptionParser，选项解析类，成员：Option _helper(初始化帮助选项)、std::map<char, int> _map_char_index(短选项名映射)、std::map<int, Option> _map_options(选项映射)，接口：重载 operator<< 增加选项，delOption 删除选项。
+
+class CMD : public mINI，成员：std::shared_ptr<OptionParser> _parser，接口：重载 operator() 解析命令行参数，hasKey(是否存在key)，splitedVal(按分隔符分隔字符串)。
+
+class CMDRegister，全局单例对象，成员：std::map<std::string, std::shared_ptr<CMD> > _cmd_map，接口：registCMD，宏：GET_CMD、CMD_DO、REGIST_CMD。
